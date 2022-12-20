@@ -167,7 +167,7 @@ const ballPosition = [
   { x: 6, z: 6 },
   { x: 8, z: 6 },
   { x: 7, z: 8 },
-]);
+];
 
 const group = new THREE.Group();
 
@@ -293,6 +293,15 @@ scene.background = environmentMap;
 let step = 0;
 
 const mousePointer = new THREE.Vector2();
+let keydown = false;
+
+window.addEventListener( 'keydown', ( event ) => {
+  keydown = true;
+});
+
+window.addEventListener( 'keyup', ( event ) => {
+  keydown = false;
+});
 
 window.addEventListener( 'mousemove', ( event ) => {
   mousePointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
@@ -315,8 +324,7 @@ function animate(time) {
   const intersects = raycaster.intersectObjects( scene.children, true );
   for ( const intersect of intersects ) {
     // console.log(intersect.object.name);
-    if ( intersect.object.name === 'cueBall' ) {
-      console.log('camera', camera);
+    if ( intersect.object.name === 'cueBall' && keydown ) {
       let v = new THREE.Vector2(
         intersect.object.position.x - camera.position.x,
         intersect.object.position.z - camera.position.z
@@ -327,14 +335,46 @@ function animate(time) {
         x: intersect.object.position.x + ( distance * Math.cos( angleInRadians ) ),
         z: intersect.object.position.z + ( distance * Math.sin( angleInRadians ) )
       }
+      const ballPositionRemainder = {
+        x: Math.abs(ballPosition.x) - 11,
+        z: Math.abs(ballPosition.z) - 22
+      }
+      if (ballPositionRemainder.x > 0) {
+        const zAtx = ballPosition.z - (ballPositionRemainder.x * Math.tan(angleInRadians));
+        const ballPosition1 = {
+          x: ballPosition.x > 0 ? (11 - ballPositionRemainder.x) : (11 +- ballPositionRemainder.x) + ( distance * Math.cos( angleInRadians ) ),
+          z: zAtx + ( distance * Math.sin( angleInRadians ) )
+        }
+        ballPosition.z = zAtx;
+        gsap.to( intersect.object.position, {
+          x: ballPosition1.x,
+          z: ballPosition1.z,
+          duration: 1,
+          delay: 1
+        });
+      }
+      if (ballPositionRemainder.z > 0) {
+        const xAtz = ballPosition.x - (ballPositionRemainder.z / Math.tan(angleInRadians));
+        const ballPosition2 = {
+          x: xAtz + ( distance * Math.cos( angleInRadians ) ),
+          z: ballPosition.z > 0 ? (22 - ballPositionRemainder.z) : (22 +- ballPositionRemainder.z) + ( distance * Math.sin( angleInRadians ) )
+        }
+        ballPosition.x = xAtz;
+        gsap.to( intersect.object.position, {
+          x: ballPosition2.x,
+          z: ballPosition2.z,
+          duration: 1,
+          delay: 1
+        });
+      }
       if (ballPosition.x > 11) {
         ballPosition.x = 11;
       }
       if (ballPosition.x < -11) {
         ballPosition.x = -11;
       }
-      if (ballPosition.z > 23) {
-        ballPosition.z = 23;
+      if (ballPosition.z > 22) {
+        ballPosition.z = 22;
       }
       if (ballPosition.z < -22) {
         ballPosition.z = -22;
