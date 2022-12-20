@@ -1,0 +1,20 @@
+{
+  "name": "snooker",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel ./src/index.html",
+    "build": "parcel build ./src/index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dat.gui": "^0.7.9",
+    "gsap": "^3.11.3",
+    "three": "^0.147.0"
+  },
+  "devDependencies": {
+    "parcel": "^2.8.2"
+  }
+}
